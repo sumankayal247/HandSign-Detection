@@ -113,21 +113,28 @@ async function predictWebcam() {
 
             const features = normalizeLandmarks(landmarks_to_draw, handedness);
             
-            if (typeof score === 'function') {
-                const scores = score(features);
-                let maxIdx = 0;
-                if (Array.isArray(scores)) {
-                    for(let i=1; i<scores.length; i++){
-                        if (scores[i] > scores[maxIdx]) maxIdx = i;
+            if (typeof window.score === 'function') {
+                try {
+                    const scores = window.score(features);
+                    let maxIdx = 0;
+                    if (Array.isArray(scores)) {
+                        for(let i=1; i<scores.length; i++){
+                            if (scores[i] > scores[maxIdx]) maxIdx = i;
+                        }
+                        current_prediction = classes[maxIdx];
+                    } else {
+                        if (typeof scores === 'string') {
+                            current_prediction = scores;
+                        } else if (typeof scores === 'number') {
+                             current_prediction = classes[scores];
+                        }
                     }
-                    current_prediction = classes[maxIdx];
-                } else {
-                    if (typeof scores === 'string') {
-                        current_prediction = scores;
-                    } else if (typeof scores === 'number') {
-                         current_prediction = classes[scores];
-                    }
+                } catch (e) {
+                    current_prediction = "ERR";
+                    console.error("Score error:", e);
                 }
+            } else {
+                current_prediction = "NO_MDL";
             }
         } else {
             smoothedLandmarks = null; // reset if hand is lost
