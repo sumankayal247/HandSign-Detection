@@ -25,15 +25,23 @@
         button { padding: 12px 24px; font-size: 18px; cursor: pointer; border: none; border-radius: 8px; background: #39ff14; color: #000; font-weight: bold; transition: 0.3s; }
         button:hover { background: #2ecc11; transform: scale(1.05); }
         #permission-message { color: #ff3333; font-weight: bold; margin-top: 15px; }
-        .bottom-panel { margin-top: 30px; }
-        .bottom-panel img { width: 100%; max-width: 600px; border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); }
+        .alphabet-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
+        .alphabet-grid img { width: 120px; border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); background: white; }
+        .bottom-grid { display: flex; justify-content: center; flex-wrap: wrap; gap: 10px; margin-top: 20px; }
+        .bottom-grid img { width: 120px; border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); background: white; }
     </style>
 </head>
 <body>
     <div class="page-layout">
         <!-- Left Part -->
         <div class="side-panel">
-            <img src="left.png" alt="ASL Part 1">
+            <div class="alphabet-grid">
+                <img src="letters/A.png" alt="A"><img src="letters/B.png" alt="B">
+                <img src="letters/C.png" alt="C"><img src="letters/D.png" alt="D">
+                <img src="letters/E.png" alt="E"><img src="letters/F.png" alt="F">
+                <img src="letters/G.png" alt="G"><img src="letters/H.png" alt="H">
+                <img src="letters/I.png" alt="I"><img src="letters/J.png" alt="J">
+            </div>
         </div>
 
         <!-- Center App -->
@@ -60,14 +68,22 @@
             </div>
             
             <!-- Bottom Part -->
-            <div class="bottom-panel">
-                <img src="bottom.png" alt="ASL Part 3">
+            <div class="bottom-grid">
+                <img src="letters/U.png" alt="U"><img src="letters/V.png" alt="V">
+                <img src="letters/W.png" alt="W"><img src="letters/X.png" alt="X">
+                <img src="letters/Y.png" alt="Y"><img src="letters/Z.png" alt="Z">
             </div>
         </div>
 
         <!-- Right Part -->
         <div class="side-panel">
-            <img src="right.png" alt="ASL Part 2">
+            <div class="alphabet-grid">
+                <img src="letters/K.png" alt="K"><img src="letters/L.png" alt="L">
+                <img src="letters/M.png" alt="M"><img src="letters/N.png" alt="N">
+                <img src="letters/O.png" alt="O"><img src="letters/P.png" alt="P">
+                <img src="letters/Q.png" alt="Q"><img src="letters/R.png" alt="R">
+                <img src="letters/S.png" alt="S"><img src="letters/T.png" alt="T">
+            </div>
         </div>
     </div>
 
