@@ -7,3 +7,5 @@ xgboost
 joblib
 pyttsx3
 tqdm
+Flask
+Flask-Cors
