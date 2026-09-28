@@ -79,6 +79,8 @@ const connections = [
 ];
 
 let lastVideoTime = -1;
+let smoothedLandmarks = null;
+const SMOOTHING_FACTOR = 0.5; // Lower is smoother
 
 async function predictWebcam() {
     if (!handLandmarker) return;
@@ -95,13 +97,24 @@ async function predictWebcam() {
         let landmarks_to_draw = null;
 
         if (results.landmarks && results.landmarks.length > 0) {
-            landmarks_to_draw = results.landmarks[0];
+            const raw_landmarks = results.landmarks[0];
+            
+            if (!smoothedLandmarks) {
+                smoothedLandmarks = raw_landmarks.map(lm => ({x: lm.x, y: lm.y, z: lm.z}));
+            } else {
+                for (let i = 0; i < raw_landmarks.length; i++) {
+                    smoothedLandmarks[i].x = SMOOTHING_FACTOR * raw_landmarks[i].x + (1 - SMOOTHING_FACTOR) * smoothedLandmarks[i].x;
+                    smoothedLandmarks[i].y = SMOOTHING_FACTOR * raw_landmarks[i].y + (1 - SMOOTHING_FACTOR) * smoothedLandmarks[i].y;
+                    smoothedLandmarks[i].z = SMOOTHING_FACTOR * raw_landmarks[i].z + (1 - SMOOTHING_FACTOR) * smoothedLandmarks[i].z;
+                }
+            }
+            landmarks_to_draw = smoothedLandmarks;
             const handedness = results.handednesses[0][0].categoryName;
 
             const features = normalizeLandmarks(landmarks_to_draw, handedness);
             
-            if (typeof predict === 'function') {
-                const scores = predict(features);
+            if (typeof score === 'function') {
+                const scores = score(features);
                 let maxIdx = 0;
                 if (Array.isArray(scores)) {
                     for(let i=1; i<scores.length; i++){
@@ -116,6 +129,8 @@ async function predictWebcam() {
                     }
                 }
             }
+        } else {
+            smoothedLandmarks = null; // reset if hand is lost
         }
         
         rawText.innerText = "Raw Pred: " + current_prediction;
