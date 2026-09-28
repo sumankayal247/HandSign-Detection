@@ -1,5 +1,36 @@
 import { HandLandmarker, FilesetResolver } from "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.3";
 
+let modelTrees = null;
+fetch('model_flat.json')
+    .then(res => res.json())
+    .then(data => {
+        modelTrees = data;
+        console.log("Model loaded successfully.");
+    });
+
+window.score = function(input) {
+    if (!modelTrees) return null;
+    let result = new Array(28).fill(0);
+    for (const tree of modelTrees) {
+        let nodeIdx = 0;
+        while (true) {
+            const node = tree[nodeIdx];
+            if (node[0] === -1) {
+                const vals = node[1];
+                for(let i=0; i<28; i++) result[i] += vals[i];
+                break;
+            } else {
+                if (input[node[0]] <= node[1]) {
+                    nodeIdx = node[2];
+                } else {
+                    nodeIdx = node[3];
+                }
+            }
+        }
+    }
+    return result;
+};
+
 let handLandmarker;
 let runningMode = "VIDEO";
 let webcamRunning = false;
