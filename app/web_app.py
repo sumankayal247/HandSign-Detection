@@ -31,21 +31,31 @@ segmenter = GestureSegmenter(cooldown_frames=20)
 
 HTML_TEMPLATE = """
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+    <meta charset="UTF-8">
     <title>ASL Web Recognition</title>
     <style>
-        body { font-family: sans-serif; text-align: center; background: #f0f0f0; margin-top: 50px; }
-        .container { display: inline-block; background: white; padding: 20px; border-radius: 10px; box-shadow: 0 4px 8px rgba(0,0,0,0.2); }
-        .controls { margin-top: 20px; }
-        button { padding: 10px 20px; font-size: 16px; margin: 5px; cursor: pointer; border: none; border-radius: 5px; background: #007bff; color: white; }
-        button:hover { background: #0056b3; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #1a1a1a; color: white; text-align: center; margin: 0; padding: 20px; }
+        .container { max-width: 800px; margin: auto; background: #2a2a2a; padding: 20px; border-radius: 12px; box-shadow: 0 8px 16px rgba(0,0,0,0.5); }
+        h1 { color: #39ff14; }
+        .video-container { position: relative; width: 640px; height: 480px; margin: auto; background: #000; border-radius: 8px; overflow: hidden; border: 2px solid #444; }
+        .controls { margin-top: 20px; display: flex; justify-content: center; gap: 15px; }
+        button { padding: 12px 24px; font-size: 18px; cursor: pointer; border: none; border-radius: 8px; background: #39ff14; color: #000; font-weight: bold; transition: 0.3s; }
+        button:hover { background: #2ecc11; transform: scale(1.05); }
+        #permission-msg { display: none; color: #ff4444; font-weight: bold; padding: 10px; }
     </style>
 </head>
 <body>
     <div class="container">
-        <h2>Real-Time ASL Fingerspelling</h2>
-        <img src="/video_feed" width="640" height="480" style="border: 1px solid #ccc; border-radius: 5px;" />
+        <h1>ASL Real-Time Recognition</h1>
+        <p>Ensure your webcam is enabled and sign ASL alphabets to the camera.</p>
+        
+        <div id="permission-msg">Camera permission denied! Please allow camera access in your browser settings.</div>
+        
+        <div class="video-container">
+            <img id="feed" src="/video_feed" width="640" height="480" style="display:none;" />
+        </div>
         <div class="controls">
             <button onclick="sendCommand('clear')">Clear Text</button>
             <button onclick="sendCommand('space')">Add Space</button>
@@ -54,6 +64,18 @@ HTML_TEMPLATE = """
     </div>
     
     <script>
+        // Check permissions before showing feed
+        navigator.mediaDevices.getUserMedia({ video: true })
+            .then(function(stream) {
+                // Permission granted
+                stream.getTracks().forEach(track => track.stop()); // Stop the stream we just requested
+                document.getElementById('feed').style.display = 'block';
+            })
+            .catch(function(err) {
+                // Permission denied or error
+                document.getElementById('permission-msg').style.display = 'block';
+            });
+
         function sendCommand(cmd) {
             fetch('/command', {
                 method: 'POST',

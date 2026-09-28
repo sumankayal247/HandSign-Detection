@@ -1,5 +1,9 @@
 # Real-Time ASL Fingerspelling Recognition Using Hand Landmarks
 
+<a href="https://sumankayal247.github.io/HandSign-Detection/" target="_blank">
+  <img src="https://img.shields.io/badge/Play_%3E-39ff14?style=for-the-badge&logo=play&logoColor=black" alt="Play >" />
+</a>
+
 This project implements a real-time computer vision system to recognize American Sign Language (ASL) fingerspelling using a webcam.
 
 ## Features
