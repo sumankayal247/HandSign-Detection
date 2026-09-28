@@ -16,7 +16,7 @@
         h1 { color: #000; margin-top: 0; }
         .video-container { position: relative; width: 640px; height: 480px; margin: auto; background: #000; border-radius: 8px; overflow: hidden; border: 2px solid #ccc; }
         video { position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; transform: scaleX(-1); }
-        canvas { position: absolute; top: 0; left: 0; width: 100%; height: 100%; transform: scaleX(1); }
+        canvas { position: absolute; top: 0; left: 0; width: 100%; height: 100%; transform: scaleX(-1); }
         .overlays { position: absolute; top: 10px; left: 10px; text-align: left; text-shadow: 2px 2px 4px #000; font-size: 24px; font-weight: bold; pointer-events: none; z-index: 10; }
         .raw { color: #ff3333; }
         .stable { color: #39ff14; }
@@ -26,9 +26,9 @@
         button:hover { background: #2ecc11; transform: scale(1.05); }
         #permission-message { color: #ff3333; font-weight: bold; margin-top: 15px; }
         .alphabet-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
-        .alphabet-grid img { width: 120px; border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); background: white; }
+        .alphabet-grid img { width: 100px; border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); background: white; }
         .bottom-grid { display: flex; justify-content: center; flex-wrap: wrap; gap: 10px; margin-top: 20px; }
-        .bottom-grid img { width: 120px; border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); background: white; }
+        .bottom-grid img { width: 100px; border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); background: white; }
     </style>
 </head>
 <body>
