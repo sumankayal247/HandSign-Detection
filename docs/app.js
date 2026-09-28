@@ -69,6 +69,15 @@ function normalizeLandmarks(landmarks, handedness) {
     return features;
 }
 
+const connections = [
+    [0,1],[1,2],[2,3],[3,4],
+    [0,5],[5,6],[6,7],[7,8],
+    [5,9],[9,10],[10,11],[11,12],
+    [9,13],[13,14],[14,15],[15,16],
+    [13,17],[17,18],[18,19],[19,20],
+    [0,17]
+];
+
 let lastVideoTime = -1;
 
 async function predictWebcam() {
@@ -83,25 +92,16 @@ async function predictWebcam() {
         canvasCtx.clearRect(0, 0, canvasElement.width, canvasElement.height);
 
         let current_prediction = 'UNKNOWN';
+        let landmarks_to_draw = null;
 
         if (results.landmarks && results.landmarks.length > 0) {
-            const landmarks = results.landmarks[0];
+            landmarks_to_draw = results.landmarks[0];
             const handedness = results.handednesses[0][0].categoryName;
-            
-            // Draw landmarks (simple)
-            canvasCtx.fillStyle = '#39ff14';
-            for (const lm of landmarks) {
-                canvasCtx.beginPath();
-                canvasCtx.arc(lm.x * canvasElement.width, lm.y * canvasElement.height, 4, 0, 2 * Math.PI);
-                canvasCtx.fill();
-            }
 
-            const features = normalizeLandmarks(landmarks, handedness);
+            const features = normalizeLandmarks(landmarks_to_draw, handedness);
             
             if (typeof predict === 'function') {
                 const scores = predict(features);
-                // m2cgen model usually returns class index or scores array. 
-                // Since it's a classifier, it might return an array of scores
                 let maxIdx = 0;
                 if (Array.isArray(scores)) {
                     for(let i=1; i<scores.length; i++){
@@ -109,9 +109,6 @@ async function predictWebcam() {
                     }
                     current_prediction = classes[maxIdx];
                 } else {
-                    // if predict returns the class directly (m2cgen sometimes does this)
-                    // Wait, m2cgen random forest classification usually returns a 1D array of scores (or 2D depending on the library version)
-                    // We'll handle array safely, or if it's string, we'll use it directly
                     if (typeof scores === 'string') {
                         current_prediction = scores;
                     } else if (typeof scores === 'number') {
@@ -143,6 +140,33 @@ async function predictWebcam() {
             stable_letter = mode;
         }
         stableText.innerText = "Stable: " + stable_letter;
+
+        // Draw landmarks and mesh
+        if (landmarks_to_draw) {
+            let isValid = (stable_letter !== 'UNKNOWN' && stable_letter !== 'STABILIZING...' && stable_letter !== 'nothing');
+            let color = isValid ? '#39ff14' : '#aaaaaa';
+            let lineColor = isValid ? '#2ecc11' : '#666666';
+
+            // Draw connections
+            canvasCtx.strokeStyle = lineColor;
+            canvasCtx.lineWidth = 2;
+            for (const [startIdx, endIdx] of connections) {
+                const startNode = landmarks_to_draw[startIdx];
+                const endNode = landmarks_to_draw[endIdx];
+                canvasCtx.beginPath();
+                canvasCtx.moveTo(startNode.x * canvasElement.width, startNode.y * canvasElement.height);
+                canvasCtx.lineTo(endNode.x * canvasElement.width, endNode.y * canvasElement.height);
+                canvasCtx.stroke();
+            }
+
+            // Draw points
+            canvasCtx.fillStyle = color;
+            for (const lm of landmarks_to_draw) {
+                canvasCtx.beginPath();
+                canvasCtx.arc(lm.x * canvasElement.width, lm.y * canvasElement.height, 4, 0, 2 * Math.PI);
+                canvasCtx.fill();
+            }
+        }
         
         // Segmentation
         if (cooldown_frames > 0) {
