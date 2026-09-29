@@ -51,6 +51,7 @@ const MIN_CONSENSUS = 0.7;
 let accumulated_text = "";
 let cooldown_frames = 0;
 const COOLDOWN_MAX = 20;
+let last_added_letter = null;
 
 async function createHandLandmarker() {
     const vision = await FilesetResolver.forVisionTasks(
@@ -226,16 +227,23 @@ async function predictWebcam() {
             cooldown_frames--;
         } else {
             if (stable_letter !== 'UNKNOWN' && stable_letter !== 'STABILIZING...' && stable_letter !== 'nothing') {
-                if (stable_letter === 'space') {
-                    accumulated_text += " ";
-                } else if (stable_letter === 'del') {
-                    accumulated_text = accumulated_text.slice(0, -1);
-                } else {
-                    accumulated_text += stable_letter;
+                if (stable_letter !== last_added_letter) {
+                    if (stable_letter === 'space') {
+                        accumulated_text += " ";
+                    } else if (stable_letter === 'del') {
+                        accumulated_text = accumulated_text.slice(0, -1);
+                    } else {
+                        accumulated_text += stable_letter;
+                    }
+                    last_added_letter = stable_letter;
+                    cooldown_frames = COOLDOWN_MAX;
+                    // clear buffer to force re-stabilization
+                    buffer = [];
                 }
-                cooldown_frames = COOLDOWN_MAX;
-                // clear buffer to force re-stabilization
-                buffer = [];
+            } else if (stable_letter === 'nothing' || stable_letter === 'UNKNOWN') {
+                // If the user drops their hand or shows nothing, reset last_added_letter 
+                // so they can type the same letter again.
+                last_added_letter = null;
             }
         }
         accumText.innerText = "Text: " + accumulated_text;
